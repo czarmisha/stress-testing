@@ -3,7 +3,7 @@ import time
 import aiohttp
 from random import randrange
 
-url = "https://devapi.bringo.uz/api/v1/user/change/profile"
+url = "http://192.168.167.110:8081/api/v1/user/change/profile"
 
 headers = {
     'Authorization': 'Basic OTk4OTczMzM0NjgyOjQ2ODI=',
@@ -14,7 +14,7 @@ success = 0
 failed = 0
 request_times = []
 
-semaphore = asyncio.Semaphore(150)
+semaphore = asyncio.Semaphore(5000)
 
 async def fetch(num: int, session: aiohttp.ClientSession):
     async with semaphore:
@@ -46,7 +46,7 @@ async def fetch(num: int, session: aiohttp.ClientSession):
 async def main():
     start_time = time.time()
     async with aiohttp.ClientSession() as session:
-        tasks = [fetch(i, session) for i in range(5000)]
+        tasks = [fetch(i, session) for i in range(100000)]
         await asyncio.gather(*tasks)
     end_time = time.time()
     total_time = end_time - start_time

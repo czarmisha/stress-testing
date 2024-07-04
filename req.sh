@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Количество запросов и параллельных потоков
-total_requests=10
-parallel_requests=150
-url="https://devbringo.bringo.uz/"
+total_requests=1000
+parallel_requests=300
+url="https://bringo.uz/"
 
 # Массив для хранения времен выполнения
 durations=()
@@ -16,8 +16,11 @@ make_request() {
   duration=$((end - start))
   duration_ms=$((duration / 1000000))
   echo "HTTP Code: $http_code, Duration: ${duration_ms}ms"
-  durations+=($duration_ms)
+  echo $duration_ms >> durations.txt
 }
+
+# Удаляем файл, если он существует
+rm -f durations.txt
 
 # Выполняем запросы параллельно
 for i in $(seq 1 $total_requests); do
@@ -28,6 +31,9 @@ for i in $(seq 1 $total_requests); do
 done
 wait
 
+# Заполняем массив durations из файла
+mapfile -t durations < durations.txt
+
 # Вычисляем минимальное, максимальное и среднее время выполнения
 min_duration=$(printf "%s\n" "${durations[@]}" | sort -n | head -n 1)
 max_duration=$(printf "%s\n" "${durations[@]}" | sort -n | tail -n 1)
@@ -37,8 +43,8 @@ for duration in "${durations[@]}"; do
   sum_duration=$((sum_duration + duration))
 done
 
-avg_duration=$((sum_duration / total_requests))
+avg_duration=$((sum_duration / $total_requests))
 
-echo "Min Duration: ${min_duration}ms"
-echo "Max Duration: ${max_duration}ms"
-echo "Avg Duration: ${avg_duration}ms"
+echo "Min Duration: $min_duration ms"
+echo "Max Duration: $max_duration ms"
+echo "Avg Duration: $avg_duration ms"

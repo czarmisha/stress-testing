@@ -4,7 +4,7 @@ import random
 import base64
 import time
 
-SEM_LIMIT = 150
+SEM_LIMIT = 1000
 
 def get_headers(token):
     return {
@@ -167,7 +167,7 @@ async def main(credentials: list):
     headers = get_headers(credentials[random.randint(0, len(credentials) - 1)])
     request_times = []
     async with aiohttp.ClientSession() as session:
-        tasks = [simulate_user(session, headers, sem, user_num, request_times) for user_num in range(5000)]
+        tasks = [simulate_user(session, headers, sem, user_num, request_times) for user_num in range(50000)]
         await asyncio.gather(*tasks)
 
     if request_times:
